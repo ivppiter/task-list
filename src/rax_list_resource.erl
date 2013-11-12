@@ -12,7 +12,15 @@ content_types_provided(Request, Context) ->
     {[{"application/json", to_json}], Request, Context}.
 
 resource_exists(Request, Context) ->
-    {false, Request, Context}.
+    {rax_schema:list_exists(id_from_request(Request)), Request, Context}.
 
 to_json(Request, Context) ->
-    {"null", Request, Context}.
+    V = rax_schema:read_list(id_from_request(Request)),
+    {mochijson2:encode(rax_request_tools:list_data_to_view(Request, V)), Request, Context}.
+
+id_from_request(Request) ->
+    Value = list_to_integer(wrq:path_info(id, Request)),
+    case Value of
+        undefined -> {error, no_data};
+        _Else -> Value
+    end.
