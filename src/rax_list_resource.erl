@@ -16,10 +16,10 @@ content_types_accepted(Request, Context) ->
     {[{"application/json", from_json}], Request, Context}.
 
 resource_exists(Request, Context) ->
-    {rax_schema:list_exists(id_from_request(Request)), Request, Context}.
+    {rax_schema:list_exists(rax_request_tools:id_from_request(Request)), Request, Context}.
 
 delete_resource(Request, Context) ->
-    Id = id_from_request(Request),
+    Id = rax_request_tools:id_from_request(Request),
     rax_schema:delete_list(Id),
     {true, Request, Context}.
 
@@ -27,7 +27,7 @@ to_json(Request, Context) ->
     {get_list_json(Request), Request, Context}.
 
 from_json(Request, Context) ->
-    Id = id_from_request(Request),
+    Id = rax_request_tools:id_from_request(Request),
     Obj = rax_request_tools:get_json_from_request(Request),
     T = rax_request_tools:get_field_from_object(Obj, "title"),
     update_list(Id, T),
@@ -35,16 +35,8 @@ from_json(Request, Context) ->
     {ok, R, Context}.
 
 get_list_json(Request) ->
-    V = rax_schema:read_list(id_from_request(Request)),
+    V = rax_schema:read_list(rax_request_tools:id_from_request(Request)),
     mochijson2:encode(rax_request_tools:list_data_to_view(Request, V)).
-
-
-id_from_request(Request) ->
-    Value = list_to_integer(wrq:path_info(id, Request)),
-    case Value of
-        undefined -> {error, no_data};
-        _Else -> Value
-    end.
 
 update_list(Id, T) when is_binary(T) -> update_list(Id, binary_to_list(T));
 update_list(Id, T) -> rax_schema:create_list(Id, T).
