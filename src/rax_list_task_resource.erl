@@ -20,7 +20,7 @@ to_json(Request, Context) ->
 
 process_post(Request, Context) ->
     Obj = rax_request_tools:get_json_from_request(Request),
-    case read_task(Obj) of
+    case rax_request_tools:read_task(Obj) of
         {ok, Tup} -> 
             Task = create_new_task(rax_request_tools:id_from_request(Request), Tup),
             Json = mochijson2:encode(rax_request_tools:task_data_to_view(Request, Task)),
@@ -34,11 +34,3 @@ create_new_task(ListId, {Title, IsComplete, WhenDue}) ->
     new_task(ListId, Title, IsComplete, WhenDue).
 new_task(ListId, Title, IsComplete, WhenDue) ->
     rax_schema:new_task(ListId, Title, IsComplete, WhenDue).
-
-read_task(Obj) -> read_task(Obj, rax_request_tools:get_field_from_object(Obj, "title")).
-read_task(Obj, Title) when is_binary(Title) -> read_task(Obj, binary_to_list(Title));
-read_task(Obj, Title) -> read_task(Obj, Title, rax_request_tools:get_field_from_object(Obj, "is_complete")).
-read_task(Obj, Title, IsComplete) -> read_task(Obj, Title, IsComplete, rax_request_tools:get_field_from_object(Obj, "when_due")).
-read_task(Obj, Title, IsComplete, WhenDue) when is_binary(WhenDue) -> 
-    read_task(Obj, Title, IsComplete, binary_to_list(WhenDue));
-read_task(_, Title, IsComplete, WhenDue) -> {ok, {Title, IsComplete, WhenDue}}.
