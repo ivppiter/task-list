@@ -1,0 +1,18 @@
+%%-*- mode: erlang -*-
+{application, rax,
+ [
+  {description, "rax"},
+  {vsn, "1"},
+  {modules, []},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib,
+                  inets,
+                  crypto,
+                  mochiweb,
+                  webmachine
+                 ]},
+  {mod, { rax_app, []}},
+  {env, []}
+ ]}.
