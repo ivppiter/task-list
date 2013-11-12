@@ -14,7 +14,7 @@ class TestListApi(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_get_list_not_found(self):
-        response = requests.get(self.test_url + '/10')
+        response = requests.get(self.test_url + '/100')
         self.assertEqual(response.status_code, 404)
 
     def test_post_list_created(self):

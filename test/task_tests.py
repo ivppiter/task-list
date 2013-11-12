@@ -35,3 +35,14 @@ class TestTaskApi(unittest.TestCase):
         taskUrl = self.base_url + taskResp.headers['Location']
         upResp = requests.put(taskUrl, data = json.dumps({"title": "test update", "is_complete": True}), headers=self.json_headers)
         self.assertEqual(upResp.status_code, 200)
+
+    def test_delete_task_deletes(self):
+        createListResp = requests.post(self.list_url, data = json.dumps({"title" : "Test Delete Task List"}), headers=self.json_headers)
+        createTaskUrl = self.base_url + createListResp.headers['Location'] + '/tasks'
+        taskResp = requests.post(createTaskUrl, data = json.dumps({"title" : "Test Delete Task", "is_complete" : False}), headers=self.json_headers)
+        taskUrl = self.base_url + taskResp.headers['Location']
+
+        deleteResp = requests.delete(taskUrl)
+        self.assertEqual(deleteResp.status_code, 204)
+        resp = requests.get(taskUrl)
+        self.assertEqual(resp.status_code, 404)
