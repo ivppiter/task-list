@@ -13,6 +13,7 @@
 %% @spec start(_Type, _StartArgs) -> ServerRet
 %% @doc application start callback for rax.
 start(_Type, _StartArgs) ->
+    rax_schema:init_tables(),
     rax_sup:start_link().
 
 %% @spec stop(_State) -> ServerRet

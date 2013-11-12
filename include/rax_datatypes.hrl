@@ -1,0 +1,1 @@
+-record(list, {id, title}).
