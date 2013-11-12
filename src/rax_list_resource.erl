@@ -1,12 +1,13 @@
 -module(rax_list_resource).
--export([init/1, allowed_methods/2, content_types_provided/2, content_types_accepted/2, resource_exists/2, to_json/2, from_json/2]).
+-export([init/1, allowed_methods/2, content_types_provided/2, 
+    content_types_accepted/2, resource_exists/2, delete_resource/2, to_json/2, from_json/2]).
 
 -include_lib("webmachine/include/webmachine.hrl").
 
 init([]) -> {ok, undefined}.
 
 allowed_methods(Request, Context) ->
-    {['GET', 'HEAD', 'PUT'], Request, Context}.
+    {['GET', 'HEAD', 'PUT', 'DELETE'], Request, Context}.
 
 content_types_provided(Request, Context) ->
     {[{"application/json", to_json}], Request, Context}.
@@ -16,6 +17,11 @@ content_types_accepted(Request, Context) ->
 
 resource_exists(Request, Context) ->
     {rax_schema:list_exists(id_from_request(Request)), Request, Context}.
+
+delete_resource(Request, Context) ->
+    Id = id_from_request(Request),
+    rax_schema:delete_list(Id),
+    {true, Request, Context}.
 
 to_json(Request, Context) ->
     {get_list_json(Request), Request, Context}.

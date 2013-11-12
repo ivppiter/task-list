@@ -1,5 +1,5 @@
 -module(rax_schema).
--export([init_tables/0, new_list/1, create_list/2, read_list/1, list_exists/1, all_lists/0]).
+-export([init_tables/0, new_list/1, create_list/2, delete_list/1, read_list/1, list_exists/1, all_lists/0]).
 
 -include("include/rax_datatypes.hrl").
 
@@ -12,6 +12,10 @@ create_list(Id, Title) ->
     Value = {list, Id, Title},
     case mnesia:transaction(fun() -> mnesia:write(Value) end) of
         {atomic, ok} -> Value
+    end.
+delete_list(Id) ->
+    case mnesia:transaction(fun() -> mnesia:delete({list, Id}) end) of
+        {atomic, ok} -> ok
     end.
 
 read_list(Id) ->

@@ -33,3 +33,10 @@ class TestListApi(unittest.TestCase):
 
         update_resp = requests.put(self.base_url + create_resp.headers['Location'], data = json.dumps({"title" : "Updated field"}), headers=self.json_headers)
         self.assertEqual(update_resp.status_code, 200)
+
+    def test_delete_list_deletes(self):
+        create_resp = requests.post(self.test_url, data = json.dumps({"title" : "Test Created"}), headers=self.json_headers)
+        self.assertEqual(create_resp.status_code, 201)
+
+        del_resp = requests.delete(self.base_url + create_resp.headers['Location'])
+        self.assertEqual(del_resp.status_code, 204)
