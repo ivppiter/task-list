@@ -1,6 +1,6 @@
 -module(rax_schema).
 -export([init_tables/0, new_list/1, create_list/2, delete_list/1, read_list/1, list_exists/1, all_lists/0]).
--export([tasks_in_list/1, new_task/4, create_task/5]).
+-export([tasks_in_list/1, new_task/4, create_task/5, read_task/1, task_exists/1]).
 
 -include("include/rax_datatypes.hrl").
 
@@ -50,6 +50,17 @@ create_task(Id, ListId, Title, IsComplete, WhenDue) ->
     Value = {task, Id, ListId, Title, IsComplete, WhenDue},
     case mnesia:transaction(fun() -> mnesia:write(Value) end) of
         {atomic, ok} -> Value
+    end.
+
+read_task(Id) ->
+    case mnesia:transaction(fun() -> mnesia:read(task, Id) end) of
+        {atomic, [Task]} -> Task;
+        {atomic, []} -> {error, not_found}
+    end.
+task_exists(Id) ->
+    case read_task(Id) of
+        {error, _} -> false;
+        _Else -> true
     end.
 
 gen_id_task() -> mnesia:table_info(task, size) + 1.

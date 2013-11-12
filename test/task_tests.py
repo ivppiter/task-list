@@ -19,3 +19,6 @@ class TestTaskApi(unittest.TestCase):
         taskResp = requests.post(url + '/tasks', data = json.dumps({"title": "test create task", "is_complete":False}), headers=self.json_headers)
         self.assertEqual(taskResp.status_code, 201)
 
+        readTaskResp = requests.get(self.base_url + taskResp.headers['Location'])
+        self.assertEqual(readTaskResp.status_code, 200)
+
