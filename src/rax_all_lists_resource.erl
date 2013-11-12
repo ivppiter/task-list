@@ -19,24 +19,13 @@ to_json(Request, Context) ->
     {Json, Request, Context}.
 
 process_post(Request, Context) ->
-    Obj = get_json_from_request(Request),
-    T = get_field_from_object(Obj, "title"),
+    Obj = rax_request_tools:get_json_from_request(Request),
+    T = rax_request_tools:get_field_from_object(Obj, "title"),
     NewList = new_list(binary_to_list(T)),
     Json = mochijson2:encode(rax_request_tools:list_data_to_view(Request, NewList)),
     Resp = wrq:set_resp_header("Location", "/list/" ++ integer_to_list(element(2, NewList)), Request),
     R = wrq:set_resp_body(Json, Resp),
     {true, R, Context}.
-
-get_json_from_request(Request) ->
-    get_json_from_request_body(wrq:req_body(Request)).
-get_json_from_request_body(Body) ->
-    {struct, Obj} = mochijson2:decode(Body),
-    Obj.
-
-get_field_from_object(Object, Key) when is_list(Key) ->
-    get_field_from_object(Object, list_to_binary(Key));
-get_field_from_object(Object, Key) ->
-    proplists:get_value(Key, Object).
 
 new_list(undefined) -> {error, no_arg};
 new_list(Title) ->

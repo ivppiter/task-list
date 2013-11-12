@@ -23,3 +23,13 @@ class TestListApi(unittest.TestCase):
 
         resp2 = requests.get(self.base_url + response.headers['Location'])
         self.assertEqual(resp2.status_code, 200)
+
+    def test_put_list_updates(self):
+        create_resp = requests.post(self.test_url, data = json.dumps({"title" : "Test Created"}), headers=self.json_headers)
+        self.assertEqual(create_resp.status_code, 201)
+
+        get_resp = requests.get(self.base_url + create_resp.headers['Location'])
+        self.assertEqual(get_resp.status_code, 200)
+
+        update_resp = requests.put(self.base_url + create_resp.headers['Location'], data = json.dumps({"title" : "Updated field"}), headers=self.json_headers)
+        self.assertEqual(update_resp.status_code, 200)
